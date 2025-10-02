@@ -361,7 +361,7 @@ def show_model_info(predictor):
     
     with col1:
         st.subheader("🎯 Best Model")
-        st.metric("Best Model", "linear regression)")
+        st.metric("Best Model", "linear regression")
         st.metric("Test R² Score", "1.0000")
         st.metric("Test RMSE", "0.01")
         st.metric("Test MAE", "0.01")
@@ -371,7 +371,7 @@ def show_model_info(predictor):
         st.metric("Training Samples", "800")
         st.metric("Test Samples", "200")
         st.metric("Total Features", "14")
-        st.metric("Cross-Validation R²", "0.9805 ± 0.0011")
+       
     
     # YOUR ACTUAL MODEL PERFORMANCE TABLE
     st.subheader("📈 All Model Performance")
