@@ -1,0 +1,73 @@
+{
+  "best_model": "Linear Regression",
+  "best_test_r2": 0.999999999701205,
+  "best_test_rmse": 0.01431923297170479,
+  "best_test_mae": 0.012271398115735792,
+  "feature_columns": [
+    "Square Footage",
+    "Number of Occupants",
+    "Appliances Used",
+    "Average Temperature",
+    "Building Type_encoded",
+    "Day of Week_encoded",
+    "Area_Per_Occupant",
+    "Appliance_Usage_Ratio",
+    "Total_Load_Factor",
+    "Temperature_Squared",
+    "Occupant_Density",
+    "Is_Residential",
+    "Is_Commercial",
+    "Is_Industrial"
+  ],
+  "model_type": "LinearRegression",
+  "training_samples": 1000,
+  "test_samples": 100,
+  "all_model_performance": [
+    {
+      "Model": "Linear Regression",
+      "Train_R2": 0.9999999997861637,
+      "Test_R2": 0.999999999701205,
+      "Test_RMSE": 0.01431923297170479,
+      "Test_MAE": 0.012271398115735792,
+      "CV_Mean_R2": 0.9999999997787901,
+      "CV_Std_R2": 1.8198611944255836e-11
+    },
+    {
+      "Model": "Ridge Regression",
+      "Train_R2": 0.9999973452928527,
+      "Test_R2": 0.9999976032658496,
+      "Test_RMSE": 1.2824575314831954,
+      "Test_MAE": 1.0394822839792641,
+      "CV_Mean_R2": 0.9999956366968792,
+      "CV_Std_R2": 6.603344960309791e-07
+    },
+    {
+      "Model": "Lasso Regression",
+      "Train_R2": 0.9999919514208668,
+      "Test_R2": 0.9999915233210535,
+      "Test_RMSE": 2.41182575018203,
+      "Test_MAE": 1.9759024957355313,
+      "CV_Mean_R2": 0.999991694623883,
+      "CV_Std_R2": 1.789181822090365e-07
+    },
+    {
+      "Model": "Random Forest (Default)",
+      "Train_R2": 0.99752968620566,
+      "Test_R2": 0.9743170535711364,
+      "Test_RMSE": 132.75640498569533,
+      "Test_MAE": 97.36455300000014,
+      "CV_Mean_R2": 0.9805054268068055,
+      "CV_Std_R2": 0.0010926752222636194
+    },
+    {
+      "Model": "Random Forest (Tuned)",
+      "Train_R2": 0.9962633609869496,
+      "Test_R2": 0.97298087403509,
+      "Test_RMSE": 136.16600893870105,
+      "Test_MAE": 100.73469072046582,
+      "CV_Mean_R2": 0.9798793361405013,
+      "CV_Std_R2": 0.0014237215835366146
+    }
+  ],
+  "timestamp": "2025-10-02 20:35:00"
+}
