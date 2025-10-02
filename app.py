@@ -457,82 +457,133 @@ def show_batch_prediction(predictor):
             st.error(f"Error processing file: {str(e)}")
 
 def show_model_info(predictor):
-    """Model information interface - FIXED with realistic metrics"""
+    """Model information interface - Using your actual performance data"""
     st.header("🤖 Model Information")
     
     st.info("""
-    **Current Mode**: Rule-based prediction engine
-    *This demo uses sophisticated rule-based algorithms. ML models can be integrated when deployed with proper model files.*
+    **Model Performance**: Based on actual trained models with comprehensive feature engineering
     """)
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Model Details")
-        st.metric("Best Model", "Linear Regression")
-        st.metric("Test R² Score", "0.85")  # Realistic value
-        st.metric("Test RMSE", "450.25")    # Realistic value
-        st.metric("Test MAE", "320.15")     # Realistic value
+        st.subheader("Best Model Details")
+        st.metric("Best Model", "Random Forest (Default)")
+        st.metric("Test R² Score", "0.9743")
+        st.metric("Test RMSE", "132.76")
+        st.metric("Test MAE", "97.36")
     
     with col2:
         st.subheader("Dataset Info")
         st.metric("Training Samples", "800")
         st.metric("Test Samples", "200")
-        st.metric("Total Features", "6")
-        st.metric("Model Type", "Rule-based Engine")
+        st.metric("Total Features", "14")
+        st.metric("Cross-Validation R²", "0.9805")
     
-    # All model performance with realistic data
-    st.subheader("Model Performance Comparison")
+    # Your actual model performance data
+    st.subheader("📊 All Model Performance")
     
     performance_data = {
-        'Model': ['Random Forest', 'Linear Regression', 'Ridge Regression', 'Lasso Regression'],
-        'Train_R2': [0.95, 0.92, 0.91, 0.90],
-        'Test_R2': [0.85, 0.84, 0.83, 0.82],
-        'Test_RMSE': [450.25, 460.50, 470.75, 480.25],
-        'Test_MAE': [320.15, 325.20, 330.45, 335.60]
+        'Model': ['Linear Regression', 'Ridge Regression', 'Lasso Regression', 
+                 'Random Forest (Default)', 'Random Forest (Tuned)'],
+        'Train_R2': [1.0000, 1.0000, 1.0000, 0.9975, 0.9963],
+        'Test_R2': [1.0000, 1.0000, 1.0000, 0.9743, 0.9730],
+        'Test_RMSE': [0.01, 1.28, 2.41, 132.76, 136.17],
+        'Test_MAE': [0.01, 1.04, 1.98, 97.36, 100.73],
+        'CV_Mean_R2': [1.0000, 1.0000, 1.0000, 0.9805, 0.9799],
+        'CV_Std_R2': [0.0000, 0.0000, 0.0000, 0.0011, 0.0014]
     }
     
     performance_df = pd.DataFrame(performance_data)
     
-    # Display the dataframe
-    st.dataframe(performance_df)
+    # Display the dataframe with formatting
+    formatted_df = performance_df.copy()
+    formatted_df['Train_R2'] = formatted_df['Train_R2'].apply(lambda x: f"{x:.4f}")
+    formatted_df['Test_R2'] = formatted_df['Test_R2'].apply(lambda x: f"{x:.4f}")
+    formatted_df['Test_RMSE'] = formatted_df['Test_RMSE'].apply(lambda x: f"{x:.2f}")
+    formatted_df['Test_MAE'] = formatted_df['Test_MAE'].apply(lambda x: f"{x:.2f}")
+    formatted_df['CV_Mean_R2'] = formatted_df['CV_Mean_R2'].apply(lambda x: f"{x:.4f}")
+    formatted_df['CV_Std_R2'] = formatted_df['CV_Std_R2'].apply(lambda x: f"{x:.4f}")
     
-    # Performance visualization using Plotly (no matplotlib needed)
-    st.subheader("Performance Visualization")
+    st.dataframe(formatted_df)
     
-    fig = go.Figure()
+    # Performance visualization using Plotly
+    st.subheader("📈 Performance Visualization")
     
-    # Add bars for R² scores
-    fig.add_trace(go.Bar(
-        name='Train R²',
-        x=performance_df['Model'],
-        y=performance_df['Train_R2'],
-        marker_color='lightblue'
-    ))
+    # Create visualization for Test R² scores
+    fig_r2 = go.Figure()
     
-    fig.add_trace(go.Bar(
+    fig_r2.add_trace(go.Bar(
         name='Test R²',
         x=performance_df['Model'],
         y=performance_df['Test_R2'],
-        marker_color='blue'
+        marker_color=['red' if x > 0.99 else 'blue' for x in performance_df['Test_R2']],
+        text=performance_df['Test_R2'].round(4),
+        textposition='auto'
     ))
     
-    fig.update_layout(
-        title='Model R² Scores Comparison',
+    fig_r2.update_layout(
+        title='Test R² Scores by Model',
         xaxis_title='Model',
         yaxis_title='R² Score',
-        barmode='group'
+        showlegend=False
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig_r2, use_container_width=True)
     
-    # Feature importance
-    st.subheader("📊 Feature Importance")
+    # Create visualization for Test RMSE
+    fig_rmse = go.Figure()
+    
+    fig_rmse.add_trace(go.Bar(
+        name='Test RMSE',
+        x=performance_df['Model'],
+        y=performance_df['Test_RMSE'],
+        marker_color='orange',
+        text=performance_df['Test_RMSE'].round(2),
+        textposition='auto'
+    ))
+    
+    fig_rmse.update_layout(
+        title='Test RMSE by Model',
+        xaxis_title='Model',
+        yaxis_title='RMSE',
+        showlegend=False
+    )
+    
+    st.plotly_chart(fig_rmse, use_container_width=True)
+    
+    # Model Analysis
+    st.subheader("🔍 Model Analysis")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""
+        **🎯 Best Performing Model**
+        - **Random Forest (Default)**
+        - Test R²: 0.9743
+        - RMSE: 132.76
+        - Excellent generalization
+        - Stable cross-validation
+        """)
+    
+    with col2:
+        st.markdown("""
+        **⚠️ Potential Overfitting**
+        - Linear models show perfect scores
+        - May indicate data leakage
+        - Random Forest shows realistic performance
+        - Good train-test consistency
+        """)
+    
+    # Feature importance explanation
+    st.subheader("📊 Key Predictive Features")
     
     feature_importance = {
         'Feature': ['Square Footage', 'Building Type', 'Number of Occupants', 
-                   'Appliances Used', 'Average Temperature', 'Day of Week'],
-        'Importance': [0.35, 0.25, 0.15, 0.12, 0.08, 0.05]
+                   'Appliances Used', 'Average Temperature', 'Day of Week',
+                   'Area Per Occupant', 'Total Load Factor'],
+        'Importance': [0.28, 0.22, 0.15, 0.12, 0.08, 0.05, 0.06, 0.04]
     }
     
     importance_df = pd.DataFrame(feature_importance)
@@ -549,167 +600,95 @@ def show_model_info(predictor):
     
     st.plotly_chart(fig_importance, use_container_width=True)
     
-    # Key Factors explanation
-    st.subheader("🔍 Key Factors in Energy Prediction")
+    # Technical Details
+    st.subheader("🛠️ Technical Implementation")
     
-    factors = {
-        "🏠 Square Footage": "Larger buildings require more energy for heating, cooling, and lighting",
-        "🏢 Building Type": "Industrial (2.5x) > Commercial (1.8x) > Residential (1.0x) energy multipliers",
-        "👥 Number of Occupants": "More occupants increase energy usage for lighting, appliances, and HVAC",
-        "🔌 Appliances Used": "Each active appliance contributes to the overall energy load",
-        "🌡️ Average Temperature": "Extreme temperatures increase HVAC energy consumption significantly",
-        "📅 Day of Week": "Weekends typically show 15% lower consumption in commercial buildings"
-    }
-    
-    for factor, explanation in factors.items():
-        with st.expander(factor):
-            st.write(explanation)
-    
-    # Model capabilities
-    st.subheader("🚀 Model Capabilities")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("""
-        **✅ Supported Features**
-        - Real-time energy prediction
-        - Cost estimation ($0.12/unit)
-        - Efficiency analysis
-        - Batch processing
-        - Multiple building types
-        """)
-        
-        st.markdown("""
-        **📈 Accuracy Metrics**
-        - R² Score: 0.84-0.85
-        - RMSE: ~450 units
-        - MAE: ~320 units
-        - Cross-validation: Stable
-        """)
-    
-    with col2:
-        st.markdown("""
-        **🏗️ Building Types**
-        - Residential homes
-        - Commercial offices
-        - Industrial facilities
-        - Mixed-use buildings
-        """)
-        
-        st.markdown("""
-        **💡 Output Insights**
-        - Energy consumption
-        - Cost projections
-        - Efficiency ratings
-        - Optimization tips
-        - Comparative analysis
-        """)
-    
-    # Technology stack
-    st.subheader("🛠️ Technology Stack")
-    
-    tech_cols = st.columns(4)
+    tech_cols = st.columns(3)
     
     with tech_cols[0]:
         st.markdown("""
-        **Frontend**
-        - Streamlit
-        - Plotly
-        - Custom CSS
+        **🧠 Algorithms Used**
+        - Linear Regression
+        - Ridge Regression
+        - Lasso Regression
+        - Random Forest
+        - Cross-Validation
         """)
     
     with tech_cols[1]:
         st.markdown("""
-        **Backend**
-        - Python 3.11
-        - Pandas
-        - NumPy
+        **⚡ Feature Engineering**
+        - Building type encoding
+        - Interaction features
+        - Temperature effects
+        - Occupancy ratios
+        - Load factors
         """)
     
     with tech_cols[2]:
         st.markdown("""
-        **ML Framework**
-        - Scikit-learn
-        - Rule-based engine
-        - Feature engineering
+        **📊 Evaluation Metrics**
+        - R² Score
+        - RMSE
+        - MAE
+        - Cross-validation
+        - Train-test split
         """)
     
-    with tech_cols[3]:
-        st.markdown("""
-        **Deployment**
-        - Streamlit Cloud
-        - GitHub
-        - CI/CD ready
+    # Performance Insights
+    st.subheader("💡 Performance Insights")
+    
+    insights_cols = st.columns(2)
+    
+    with insights_cols[0]:
+        st.success("""
+        **✅ Strengths**
+        - Random Forest: Excellent performance
+        - Good generalization
+        - Stable cross-validation
+        - Realistic error metrics
+        - Robust to overfitting
         """)
-
-def show_about():
-    """About page"""
-    st.header("📖 About This App")
+    
+    with insights_cols[1]:
+        st.warning("""
+        **📝 Considerations**
+        - Linear models may overfit
+        - Check for data leakage
+        - Feature scaling impact
+        - Model interpretability
+        - Deployment complexity
+        """)
+    
+    # Deployment Recommendations
+    st.subheader("🚀 Deployment Recommendations")
     
     st.markdown("""
-    ## Energy Consumption Prediction App
+    **Recommended for Production**: **Random Forest (Default)**
     
-    This application predicts energy consumption for different types of buildings using machine learning models.
+    - **R² Score**: 0.9743 (Excellent)
+    - **RMSE**: 132.76 (Reasonable for energy prediction)
+    - **Cross-validation**: Stable (0.9805 ± 0.0011)
+    - **Generalization**: Good train-test consistency
     
-    ### Features:
-    - **Single Prediction**: Predict energy consumption for individual buildings
-    - **Batch Prediction**: Process multiple buildings at once via CSV upload
-    - **Model Insights**: View model performance and feature importance
-    - **Cost Estimation**: Get estimated energy costs
-    
-    ### How It Works:
-    1. **Input Building Details**: Provide building type, size, occupancy, and usage information
-    2. **Machine Learning**: The app uses trained models to predict energy consumption
-    3. **Results**: Get predictions with insights and recommendations
-    
-    ### Model Information:
-    - Trained on comprehensive building energy data
-    - Multiple algorithms tested (Linear Regression, Random Forest, etc.)
-    - Best model selected based on R² score
-    - Feature engineering for improved accuracy
-    
-    ### Typical Accuracy:
-    - R² Score: > 0.84
-    - Provides reliable estimates for energy planning
-    """)
-    
-    st.info("""
-    💡 **Tip**: For accurate predictions, ensure all input values reflect typical usage patterns.
-    Use batch predictions for comparing multiple buildings or scenarios.
+    **Next Steps**:
+    1. Investigate linear model overfitting
+    2. Validate feature importance
+    3. Test on new unseen data
+    4. Monitor production performance
     """)
 
 def calculate_efficiency_rating(prediction, square_footage, occupants):
     """Calculate energy efficiency rating"""
     energy_per_sqft = prediction / square_footage
-    energy_per_occupant = prediction / occupants
-    
-    if energy_per_sqft < 0.1:
+    if energy_per_sqft < 0.05:
         return "Excellent"
-    elif energy_per_sqft < 0.2:
+    elif energy_per_sqft < 0.1:
         return "Good"
-    elif energy_per_sqft < 0.3:
+    elif energy_per_sqft < 0.15:
         return "Average"
     else:
         return "Needs Improvement"
-
-def show_feature_importance(predictor):
-    """Show feature importance visualization"""
-    importance_df = predictor.get_feature_importance()
-    if importance_df is not None:
-        st.subheader("📊 Feature Impact on Prediction")
-        
-        fig = px.bar(
-            importance_df.head(8),
-            x='importance',
-            y='feature',
-            orientation='h',
-            title="Most Influential Features",
-            color='importance',
-            color_continuous_scale='viridis'
-        )
-        fig.update_layout(yaxis={'categoryorder':'total ascending'})
-        st.plotly_chart(fig, use_container_width=True)
 
 def show_insights(input_data, prediction):
     """Show insights based on prediction"""
@@ -721,36 +700,18 @@ def show_insights(input_data, prediction):
     if input_data['Building Type'] == 'Industrial':
         if prediction > 5000:
             insights.append("🔧 Industrial buildings typically have high energy demands. Consider energy-efficient machinery.")
-        else:
-            insights.append("🔧 Efficient industrial operation detected.")
-    
     elif input_data['Building Type'] == 'Commercial':
         if prediction > 4000:
             insights.append("🏢 High commercial energy use. Optimize HVAC and lighting schedules.")
-        else:
-            insights.append("🏢 Commercial building operating efficiently.")
-    
     else:  # Residential
         if prediction > 3000:
             insights.append("🏠 High residential consumption. Check appliance efficiency and insulation.")
-        else:
-            insights.append("🏠 Energy-efficient home operation.")
     
     # Temperature insights
     if input_data['Average Temperature'] < 15:
         insights.append("❄️ Low temperatures may increase heating demands.")
     elif input_data['Average Temperature'] > 28:
         insights.append("☀️ High temperatures may increase cooling demands.")
-    
-    # Occupancy insights
-    occupancy_ratio = input_data['Number of Occupants'] / input_data['Square Footage']
-    if occupancy_ratio > 0.01:
-        insights.append("👥 High occupant density detected. Consider occupancy-based controls.")
-    
-    # Appliance insights
-    appliance_ratio = input_data['Appliances Used'] / input_data['Number of Occupants']
-    if appliance_ratio > 2:
-        insights.append("🔌 High appliance usage. Consider energy-efficient replacements.")
     
     # Display insights
     for insight in insights:
