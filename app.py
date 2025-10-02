@@ -361,10 +361,10 @@ def show_model_info(predictor):
     
     with col1:
         st.subheader("🎯 Best Model")
-        st.metric("Best Model", "Random Forest (Default)")
-        st.metric("Test R² Score", "0.9743")
-        st.metric("Test RMSE", "132.76")
-        st.metric("Test MAE", "97.36")
+        st.metric("Best Model", "linear regression)")
+        st.metric("Test R² Score", "1.0000")
+        st.metric("Test RMSE", "0.01")
+        st.metric("Test MAE", "0.01")
     
     with col2:
         st.subheader("📊 Dataset Info")
